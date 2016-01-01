@@ -1,0 +1,27 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ivanchik.task.manager.api.db.UserMapper">
+
+    <insert id="createTableIfNeeded">
+        CREATE TABLE IF NOT EXISTS users (id INT auto_increment PRIMARY KEY NOT NULL, name VARCHAR(255) UNIQUE NOT NULL)
+    </insert>
+
+    <insert id="addUser" parameterType="ivanchik.task.manager.api.pojo.User" useGeneratedKeys="true">
+        INSERT INTO users (name) VALUES(#{name})
+    </insert>
+
+    <select id="getUserList" resultType="ivanchik.task.manager.api.pojo.User">
+        SELECT * FROM users
+    </select>
+
+    <delete id="deleteUser" parameterType="ivanchik.task.manager.api.pojo.User">
+        DELETE FROM users WHERE id = #{id}
+    </delete>
+
+    <update id="updateUser" parameterType="ivanchik.task.manager.api.pojo.User">
+        UPDATE users SET name = #{name} WHERE id = #{id}
+    </update>
+
+</mapper>

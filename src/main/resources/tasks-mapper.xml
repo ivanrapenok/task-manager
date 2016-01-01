@@ -1,0 +1,79 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ivanchik.task.manager.api.db.TaskMapper">
+
+    <insert id="createTableIfNeeded">
+        CREATE TABLE IF NOT EXISTS tasks (
+            id INT auto_increment PRIMARY KEY NOT NULL,
+            parent_id INT,
+            user_id INT,
+            name varchar(30) NOT NULL,
+            description text,
+            start_date TIMESTAMP,
+            end_date TIMESTAMP,
+            time_spent INT,
+            progress INT(3),
+            daily BOOLEAN(1),
+            closed BOOLEAN(1),
+            FOREIGN KEY(parent_id) REFERENCES tasks(id),
+            FOREIGN KEY(user_id) REFERENCES users(id)
+        )
+    </insert>
+
+    <insert id="addTask" parameterType="ivanchik.task.manager.api.pojo.Task" useGeneratedKeys="true">
+        INSERT INTO tasks (
+            parent_id,
+            user_id,
+            name,
+            description,
+            start_date,
+            end_date,
+            time_spent,
+            progress,
+            daily,
+            closed
+        )
+        VALUES (
+            #{parentId},
+            #{userId},
+            #{name},
+            #{description},
+            #{startDate},
+            #{endDate},
+            #{timeSpent},
+            #{progress},
+            #{daily},
+            #{closed}
+        )
+    </insert>
+
+    <update id="updateTask" parameterType="ivanchik.task.manager.api.pojo.Task" useGeneratedKeys="true">
+        UPDATE tasks SET (
+        name,
+        description,
+        start_date,
+        end_date,
+        time_spent,
+        progress,
+        daily,
+        closed
+        )
+        VALUES (
+        #{name},
+        #{description},
+        #{startDate},
+        #{endDate},
+        #{timeSpent},
+        #{progress},
+        #{daily},
+        #{closed}
+        )
+    </update>
+
+    <select id="getTaskList"  resultType="ivanchik.task.manager.api.pojo.Task">
+        SELECT * FROM tasks
+    </select>
+
+</mapper>
