@@ -1,6 +1,5 @@
 package ivanchik.task.manager.api.db;
 
-import ivanchik.task.manager.api.pojo.Task;
 import ivanchik.task.manager.api.pojo.User;
 
 import java.util.List;

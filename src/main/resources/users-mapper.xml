@@ -8,7 +8,7 @@
         CREATE TABLE IF NOT EXISTS users (id INT auto_increment PRIMARY KEY NOT NULL, name VARCHAR(255) UNIQUE NOT NULL)
     </insert>
 
-    <insert id="addUser" parameterType="ivanchik.task.manager.api.pojo.User" useGeneratedKeys="true">
+    <insert id="addUser" parameterType="ivanchik.task.manager.api.pojo.User" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO users (name) VALUES(#{name})
     </insert>
 

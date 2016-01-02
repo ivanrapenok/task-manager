@@ -40,6 +40,7 @@ public class H2Storage implements Storage {
             TaskMapper taskMapper = sqlSession.getMapper(TaskMapper.class);
             userMapper.createTableIfNeeded();
             taskMapper.createTableIfNeeded();
+            sqlSession.commit();
         }
     }
 
@@ -65,6 +66,7 @@ public class H2Storage implements Storage {
         try(SqlSession sqlSession = sessionFactory.openSession()) {
             UserMapper mapper = sqlSession.getMapper(UserMapper.class);
             mapper.addUser(user);
+            sqlSession.commit();
             LOGGER.info("Inserted " + user.toString());
         }
     }
@@ -74,6 +76,7 @@ public class H2Storage implements Storage {
         try(SqlSession sqlSession = sessionFactory.openSession()) {
             UserMapper mapper = sqlSession.getMapper(UserMapper.class);
             mapper.deleteUser(user);
+            sqlSession.commit();
             LOGGER.info("Deleted " + user.toString());
         }
     }
@@ -83,6 +86,7 @@ public class H2Storage implements Storage {
         try(SqlSession sqlSession = sessionFactory.openSession()) {
             UserMapper mapper = sqlSession.getMapper(UserMapper.class);
             mapper.updateUser(user);
+            sqlSession.commit();
             LOGGER.info("Updated " + user.toString());
         }
     }
@@ -100,6 +104,7 @@ public class H2Storage implements Storage {
         try(SqlSession sqlSession = sessionFactory.openSession()) {
             TaskMapper mapper = sqlSession.getMapper(TaskMapper.class);
             mapper.addTask(task);
+            sqlSession.commit();
             LOGGER.info("Inserted " + task.toString());
         }
     }
@@ -109,6 +114,7 @@ public class H2Storage implements Storage {
         try(SqlSession sqlSession = sessionFactory.openSession()) {
             TaskMapper mapper = sqlSession.getMapper(TaskMapper.class);
             mapper.updateTask(task);
+            sqlSession.commit();
             LOGGER.info("Updated " + task.toString());
         }
     }

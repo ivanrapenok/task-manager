@@ -22,7 +22,7 @@
         )
     </insert>
 
-    <insert id="addTask" parameterType="ivanchik.task.manager.api.pojo.Task" useGeneratedKeys="true">
+    <insert id="addTask" parameterType="ivanchik.task.manager.api.pojo.Task" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO tasks (
             parent_id,
             user_id,

@@ -4,9 +4,9 @@ import ivanchik.task.manager.core.db.H2Storage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import javax.swing.*;
+import java.sql.*;
+import java.util.Arrays;
 
 public class TaskManager {
 
@@ -14,6 +14,7 @@ public class TaskManager {
 
     public static void main(String[] args) {
         initDb();
+        SwingUtilities.invokeLater(MainForm::new);
     }
 
     private static void initDb() {
@@ -21,6 +22,15 @@ public class TaskManager {
         try {
             conn = DriverManager.
                     getConnection("jdbc:h2:./db/db");
+//            Statement statement = conn.createStatement();
+//            statement.execute("INSERT INTO users (name) VALUES('egor2')");
+//
+//            statement = conn.createStatement();
+//            ResultSet rs = statement.executeQuery("SELECT * FROM users");
+//            while (rs.next()) {
+//                int id = rs.getInt("id");
+//                System.out.println(id);
+//            }
             conn.close();
         } catch (SQLException e) {
             LOGGER.error(e.getMessage(), e);
