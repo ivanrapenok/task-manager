@@ -1,4 +1,4 @@
-package ivanchik.task.manager.api;
+package ivanchik.task.manager.api.model;
 
 import javax.swing.table.DefaultTableModel;
 

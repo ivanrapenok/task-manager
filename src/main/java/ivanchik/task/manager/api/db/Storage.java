@@ -20,4 +20,8 @@ public interface Storage {
     void addTask(Task task);
 
     void updateTask(Task task);
+
+    void deleteTask(Task task);
+
+    Task getTask(Task task);
 }

@@ -7,30 +7,30 @@
     <insert id="createTableIfNeeded">
         CREATE TABLE IF NOT EXISTS tasks (
             id INT auto_increment PRIMARY KEY NOT NULL,
-            parent_id INT,
-            user_id INT,
+            parentId INT,
+            userId INT,
             name varchar(30) NOT NULL,
             description text,
-            start_date TIMESTAMP,
-            end_date TIMESTAMP,
-            time_spent INT,
+            startDate TIMESTAMP,
+            endDate TIMESTAMP,
+            timeSpent INT,
             progress INT(3),
             daily BOOLEAN(1),
             closed BOOLEAN(1),
-            FOREIGN KEY(parent_id) REFERENCES tasks(id),
-            FOREIGN KEY(user_id) REFERENCES users(id)
+            FOREIGN KEY(parentId) REFERENCES tasks(id),
+            FOREIGN KEY(userId) REFERENCES users(id)
         )
     </insert>
 
     <insert id="addTask" parameterType="ivanchik.task.manager.api.pojo.Task" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO tasks (
-            parent_id,
-            user_id,
+            parentId,
+            userId,
             name,
             description,
-            start_date,
-            end_date,
-            time_spent,
+            startDate,
+            endDate,
+            timeSpent,
             progress,
             daily,
             closed
@@ -49,31 +49,29 @@
         )
     </insert>
 
-    <update id="updateTask" parameterType="ivanchik.task.manager.api.pojo.Task" useGeneratedKeys="true">
-        UPDATE tasks SET (
-        name,
-        description,
-        start_date,
-        end_date,
-        time_spent,
-        progress,
-        daily,
-        closed
-        )
-        VALUES (
-        #{name},
-        #{description},
-        #{startDate},
-        #{endDate},
-        #{timeSpent},
-        #{progress},
-        #{daily},
-        #{closed}
-        )
+    <update id="updateTask" parameterType="ivanchik.task.manager.api.pojo.Task">
+        UPDATE tasks SET
+        name = #{name},
+        description = #{description},
+        startDate = #{startDate},
+        endDate = #{endDate},
+        timeSpent = #{timeSpent},
+        progress = #{progress},
+        daily = #{daily},
+        closed = #{closed}
+        WHERE id = #{id}
     </update>
+
+    <delete id="deleteTask" parameterType="ivanchik.task.manager.api.pojo.Task">
+        DELETE FROM tasks WHERE id = #{id}
+    </delete>
 
     <select id="getTaskList"  resultType="ivanchik.task.manager.api.pojo.Task">
         SELECT * FROM tasks
+    </select>
+
+    <select id="getTask" resultType="ivanchik.task.manager.api.pojo.Task">
+        SELECT * FROM tasks WHERE id = #{id}
     </select>
 
 </mapper>

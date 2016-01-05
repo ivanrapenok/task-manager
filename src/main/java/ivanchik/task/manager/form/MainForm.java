@@ -1,14 +1,12 @@
-package ivanchik.task.manager;
+package ivanchik.task.manager.form;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 
-import com.jgoodies.forms.factories.*;
 import com.jgoodies.forms.layout.*;
-import ivanchik.task.manager.api.NotEditableTableModel;
+import ivanchik.task.manager.api.model.NotEditableTableModel;
 import ivanchik.task.manager.api.db.Storage;
 import ivanchik.task.manager.api.pojo.User;
 import ivanchik.task.manager.core.db.H2Storage;
@@ -66,6 +64,7 @@ public class MainForm extends JFrame {
         deleteButton.addActionListener(this::deleteUser);
         createButton.addActionListener(this::createUser);
         editButton.addActionListener(this::editUser);
+        selectButton.addActionListener(this::selectUser);
 
         pack();
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -83,6 +82,17 @@ public class MainForm extends JFrame {
         fillUserTable();
     }
 
+    private void selectUser(ActionEvent actionEvent) {
+        int selected = userTable.getSelectedRow();
+        if(selected < 0) {
+            return;
+        }
+        int id = (int) userTable.getModel().getValueAt(selected, 0);
+        setVisible(false);
+        dispose();
+        SwingUtilities.invokeLater(new TaskForm(id));
+    }
+
     private void createUser(ActionEvent actionEvent) {
         if(username.getText().isEmpty()) {
             return;
@@ -97,6 +107,7 @@ public class MainForm extends JFrame {
             return;
         }
         int id = (int) userTable.getModel().getValueAt(selected, 0);
+        System.out.println();
         storage.deleteUser(new User().setId(id));
         fillUserTable();
     }

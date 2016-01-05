@@ -118,4 +118,22 @@ public class H2Storage implements Storage {
             LOGGER.info("Updated " + task.toString());
         }
     }
+
+    @Override
+    public void deleteTask(Task task) {
+        try(SqlSession sqlSession = sessionFactory.openSession()) {
+            TaskMapper mapper = sqlSession.getMapper(TaskMapper.class);
+            mapper.deleteTask(task);
+            sqlSession.commit();
+            LOGGER.info("Deleted " + task.toString());
+        }
+    }
+
+    @Override
+    public Task getTask(Task task) {
+        try(SqlSession sqlSession = sessionFactory.openSession()) {
+            TaskMapper mapper = sqlSession.getMapper(TaskMapper.class);
+            return mapper.getTask(task);
+        }
+    }
 }
