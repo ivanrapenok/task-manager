@@ -2,6 +2,7 @@ package ivanchik.task.manager.form;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.sun.org.apache.xpath.internal.SourceTree;
 import ivanchik.task.manager.api.db.Storage;
 import ivanchik.task.manager.api.pojo.Task;
 import ivanchik.task.manager.core.db.H2Storage;
@@ -76,14 +77,18 @@ public class EditTaskForm extends JFrame implements Runnable{
         taskNameField = new JTextField();
         descriptionField = new JTextField();
 
-        UtilDateModel model = new UtilDateModel();
-        model.setSelected(true);
+        UtilDateModel endDateModel = new UtilDateModel();
+        UtilDateModel startDateModel = new UtilDateModel();
+        endDateModel.setSelected(true);
+        startDateModel.setSelected(true);
         Calendar calendar = Calendar.getInstance();
-        model.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-        JDatePanelImpl datePanel = new JDatePanelImpl(model);
+        endDateModel.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        startDateModel.setDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        JDatePanelImpl endDatePanel = new JDatePanelImpl(endDateModel);
+        JDatePanelImpl startDatePanel = new JDatePanelImpl(startDateModel);
         //commentField = new JDatePickerImpl(datePanel);
-        startDateField = new JDatePickerImpl(datePanel);
-        endDateField = new JDatePickerImpl(datePanel);
+        startDateField = new JDatePickerImpl(startDatePanel);
+        endDateField = new JDatePickerImpl(endDatePanel);
         progressField = new JTextField();
         timeSpentField = new JTextField();
         dalyField = new JCheckBox();
@@ -98,7 +103,7 @@ public class EditTaskForm extends JFrame implements Runnable{
 
         Container contentPane = getContentPane();
         contentPane.setLayout(new FormLayout(
-                "50px, default, 300, 50px",
+                "50px, default, 400, 50px",
                 "default, default, default, default, default, " +
                         "default, default, default, default, " +
                         "default, default, default, default, " +
@@ -121,11 +126,11 @@ public class EditTaskForm extends JFrame implements Runnable{
         description.setPreferredSize(new Dimension(100, 30));
         contentPane.add(description, new CellConstraints(2, 3));
 
-        descriptionField.setPreferredSize(new Dimension(100, 30));
+        descriptionField.setPreferredSize(new Dimension(100, 100));
         contentPane.add(descriptionField, new CellConstraints(3, 3));
 
-        comment.setPreferredSize(new Dimension(100, 30));
-        contentPane.add(comment, new CellConstraints(2, 4));
+//        comment.setPreferredSize(new Dimension(100, 30));
+//        contentPane.add(comment, new CellConstraints(2, 4));
 
 //        commentField.setPreferredSize(new Dimension(100, 30));
 //        contentPane.add(commentField, new CellConstraints(3, 4));
@@ -234,6 +239,9 @@ public class EditTaskForm extends JFrame implements Runnable{
     }
 
     public void addTask(ActionEvent actionEvent) {
+        if (!checkFields()) {
+            return;
+        }
         storage.addTask(fillTask());
         setVisible(false);
         dispose();
@@ -241,6 +249,9 @@ public class EditTaskForm extends JFrame implements Runnable{
     }
 
     public void editTask(ActionEvent actionEvent) {
+        if (!checkFields()) {
+            return;
+        }
         storage.updateTask(fillTask());
         setVisible(false);
         dispose();
@@ -291,8 +302,53 @@ public class EditTaskForm extends JFrame implements Runnable{
     }
 
     public boolean checkFields() {
+        boolean check = true;
+        taskName.setForeground(Color.black);
+        progress.setForeground(Color.black);
+        timeSpent.setForeground(Color.black);
+        endDate.setForeground(Color.black);
+        startDate.setForeground(Color.black);
 
+        if (taskNameField.getText().isEmpty()) {
+            taskName.setForeground(Color.red);
+            check = false;
+        }
+        if (!isIntStrInRange(progressField.getText(), 0 , 100)) {
+            progress.setForeground(Color.red);
+            check = false;
+        }
+        if (!isInteger(timeSpentField.getText(), 10) || timeSpentField.getText().isEmpty()) {
+            timeSpent.setForeground(Color.red);
+            check = false;
+        }
+        if (((Date) endDateField.getModel().getValue()).before((Date) startDateField.getModel().getValue())) {
+            endDate.setForeground(Color.red);
+            startDate.setForeground(Color.red);
+            check = false;
+        }
+        return check;
+    }
+
+    public static boolean isInteger(String s, int radix) {
+        if(s.isEmpty()) return false;
+        for(int i = 0; i < s.length(); i++) {
+            if(i == 0 && s.charAt(i) == '-') {
+                if(s.length() == 1) return false;
+                else continue;
+            }
+            if(Character.digit(s.charAt(i),radix) < 0) return false;
+        }
         return true;
+    }
+
+    public static boolean isIntStrInRange(String num, int min, int max) {
+        try {
+            int n = Integer.parseInt(num);
+            return !((n < min) || (n > max));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override

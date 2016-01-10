@@ -67,7 +67,7 @@
     </delete>
 
     <select id="getTaskList"  resultType="ivanchik.task.manager.api.pojo.Task">
-        SELECT * FROM tasks
+        SELECT * FROM tasks ORDER BY endDate
     </select>
 
     <select id="getTask" resultType="ivanchik.task.manager.api.pojo.Task">

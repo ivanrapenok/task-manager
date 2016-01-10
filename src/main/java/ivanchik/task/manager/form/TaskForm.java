@@ -21,12 +21,15 @@ public class TaskForm extends JFrame implements Runnable {
     private JTable taskTable;
     private JButton createTaskButton;
     private JButton signOutButton;
+    private JLabel errorLabel;
 
     private final Storage storage = H2Storage.getInstance();
     private long userId;
+    private boolean showHistory = false;
 
     public TaskForm(long userId) {
         this.userId = userId;
+        showHistory = false;
         initComponents(userId);
         taskTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         fillUserTable();
@@ -41,10 +44,11 @@ public class TaskForm extends JFrame implements Runnable {
         signOutButton = new JButton();
         scrollPane1 = new JScrollPane();
         taskTable = new JTable();
+        errorLabel = new JLabel();
 
         Container contentPane = getContentPane();
         contentPane.setLayout(new FormLayout(
-                "default, default",
+                "default, 125px",
                 "default, default, default, default, default, 200px"));
 
         createTaskButton.setText("Add task");
@@ -65,6 +69,10 @@ public class TaskForm extends JFrame implements Runnable {
         scrollPane1.setViewportView(taskTable);
         contentPane.add(scrollPane1, new CellConstraints(1, 1, 1, 6));
 
+        errorLabel.setForeground(Color.red);
+        errorLabel.setVisible(false);
+        contentPane.add(errorLabel, new CellConstraints(2, 6));
+
         historyButton.addActionListener(this::showHideHistory);
         createTaskButton.addActionListener(this::addTask);
         createSubTaskButton.addActionListener(this::addSubTask);
@@ -84,8 +92,12 @@ public class TaskForm extends JFrame implements Runnable {
     }
 
     private void editTask(ActionEvent actionEvent) {
+        errorLabel.setVisible(false);
+        errorLabel.setVisible(false);
         int selected = taskTable.getSelectedRow();
-        if(selected < 0) {
+        if (selected < 0) {
+            errorLabel.setText("Choose task");
+            errorLabel.setVisible(true);
             return;
         }
         long id = (long) taskTable.getModel().getValueAt(selected, 0);
@@ -96,8 +108,11 @@ public class TaskForm extends JFrame implements Runnable {
     }
 
     private void addSubTask(ActionEvent actionEvent) {
+        errorLabel.setVisible(false);
         int selected = taskTable.getSelectedRow();
-        if(selected < 0) {
+        if (selected < 0) {
+            errorLabel.setText("Choose task");
+            errorLabel.setVisible(true);
             return;
         }
         long id = (long) taskTable.getModel().getValueAt(selected, 0);
@@ -107,7 +122,14 @@ public class TaskForm extends JFrame implements Runnable {
     }
 
     private void showHideHistory(ActionEvent e) {
-
+        errorLabel.setVisible(false);
+        if (showHistory) {
+            historyButton.setText("Show history");
+        } else {
+            historyButton.setText("Hide history");
+        }
+        showHistory = !showHistory;
+        fillUserTable();
     }
 
     private void signOut(ActionEvent actionEvent) {
@@ -120,20 +142,26 @@ public class TaskForm extends JFrame implements Runnable {
         Object[] columnNames = {"id", "name", "description", "end date", "progress", "time spent"};
         DefaultTableModel model = new NotEditableTableModel(columnNames, 0);
         for (Task task : storage.getTaskList()) {
-            if ((task.getUserId() != null) && (task.getUserId() == userId)) {
-                model.addRow(new Object[]{task.getId(),
-                        task.getName(),
-                        task.getDescription(),
-                        task.getEndDate(),
-                        task.getProgress(),
-                        task.getTimeSpent(),
-                        task.getParentId(),
-                        task.getStartDate(),
-                        task.getUserId()});
+            if ((task.getUserId() != null) && (task.getUserId() == userId) && (!task.isClosed() || showHistory)) {
+                    model.addRow(new Object[]{task.getId(),
+                            task.getName(),
+                            task.getDescription(),
+                            task.getEndDate(),
+                            task.getProgress(),
+                            task.getTimeSpent(),
+                            task.getParentId(),
+                            task.getStartDate(),
+                            task.getUserId()});
             }
+
         }
         taskTable.setModel(model);
         taskTable.removeColumn(taskTable.getColumnModel().getColumn(0));
+        taskTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+        taskTable.getColumnModel().getColumn(1).setPreferredWidth(200);
+        taskTable.getColumnModel().getColumn(2).setPreferredWidth(80);
+        taskTable.getColumnModel().getColumn(3).setPreferredWidth(40);
+        taskTable.getColumnModel().getColumn(4).setPreferredWidth(40);
     }
 
     @Override

@@ -20,6 +20,7 @@ public class MainForm extends JFrame {
     private JTable userTable;
     private JButton selectButton;
     private JTextField username;
+    private JLabel errorLabel;
 
     private final Storage storage = H2Storage.getInstance();
 
@@ -37,29 +38,34 @@ public class MainForm extends JFrame {
         scrollPane1 = new JScrollPane();
         userTable = new JTable();
         username = new JTextField();
+        errorLabel = new JLabel("Hello");
 
         Container contentPane = getContentPane();
         contentPane.setLayout(new FormLayout(
-            "default, default",
+            "default, 125px",
             "default, default, default, default, default, 200px"));
 
         username.setPreferredSize(new Dimension(0, 30));
         contentPane.add(username, new CellConstraints(2, 1));
 
-        selectButton.setText("Выбрать");
+        selectButton.setText("Sign in");
         contentPane.add(selectButton, new CellConstraints(2, 2));
 
-        createButton.setText("Создать");
+        createButton.setText("Add");
         contentPane.add(createButton, new CellConstraints(2, 3));
 
-        editButton.setText("Изменить");
+        editButton.setText("Edit");
         contentPane.add(editButton, new CellConstraints(2, 4));
 
-        deleteButton.setText("Удалить");
+        deleteButton.setText("Delete");
         contentPane.add(deleteButton, new CellConstraints(2, 5));
 
         scrollPane1.setViewportView(userTable);
         contentPane.add(scrollPane1, new CellConstraints(1, 1, 1, 6));
+
+        errorLabel.setForeground(Color.red);
+        errorLabel.setVisible(false);
+        contentPane.add(errorLabel, new CellConstraints(2, 6));
 
         deleteButton.addActionListener(this::deleteUser);
         createButton.addActionListener(this::createUser);
@@ -73,8 +79,21 @@ public class MainForm extends JFrame {
     }
 
     private void editUser(ActionEvent actionEvent) {
+        errorLabel.setVisible(false);
         int selected = userTable.getSelectedRow();
-        if(selected < 0 || username.getText().isEmpty()) {
+        if (selected < 0) {
+            errorLabel.setText("Choose user");
+            errorLabel.setVisible(true);
+            return;
+        }
+        if (username.getText().isEmpty()) {
+            errorLabel.setText("Username is empty");
+            errorLabel.setVisible(true);
+            return;
+        }
+        if (isUserExist(username.getText())) {
+            errorLabel.setText("User is exist");
+            errorLabel.setVisible(true);
             return;
         }
         int id = (int) userTable.getModel().getValueAt(selected, 0);
@@ -83,8 +102,11 @@ public class MainForm extends JFrame {
     }
 
     private void selectUser(ActionEvent actionEvent) {
+        errorLabel.setVisible(false);
         int selected = userTable.getSelectedRow();
-        if(selected < 0) {
+        if (selected < 0) {
+            errorLabel.setText("Choose user");
+            errorLabel.setVisible(true);
             return;
         }
         int id = (int) userTable.getModel().getValueAt(selected, 0);
@@ -94,16 +116,36 @@ public class MainForm extends JFrame {
     }
 
     private void createUser(ActionEvent actionEvent) {
+        errorLabel.setVisible(false);
         if(username.getText().isEmpty()) {
+            errorLabel.setText("Username is empty");
+            errorLabel.setVisible(true);
+            return;
+        }
+        if (isUserExist(username.getText())) {
+            errorLabel.setText("User is exist");
+            errorLabel.setVisible(true);
             return;
         }
         storage.addUser(new User().setName(username.getText()));
         fillUserTable();
     }
 
+    private boolean isUserExist(String name) {
+        for (User user: storage.getUserList()) {
+            if (user.getName().equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void deleteUser(ActionEvent e) {
+        errorLabel.setVisible(false);
         int selected = userTable.getSelectedRow();
         if(selected < 0) {
+            errorLabel.setText("Choose user");
+            errorLabel.setVisible(true);
             return;
         }
         int id = (int) userTable.getModel().getValueAt(selected, 0);
